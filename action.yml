@@ -53,7 +53,7 @@ runs:
     - name: Download Vulkan SDK
       uses: humbletim/setup-vulkan-sdk@v1.2.1
       with:
-        vulkan-query-version: '${{ sdkVersion }}'
+        vulkan-query-version: '${{ inputs.sdkVersion }}'
         vulkan-components: Vulkan-Headers, Vulkan-Loader, Vulkan-ValidationLayers
         vulkan-use-cache: true
 

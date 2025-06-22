@@ -105,4 +105,5 @@ runs:
         echo "vk-ci-swiftshader-install-path=$SWIFTSHADER_INSTALL_PATH" >> "$GITHUB_OUTPUT"
 
     - name: cat
+      shell: bash
       run: cat $VULKAN_SDK

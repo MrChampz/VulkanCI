@@ -61,7 +61,7 @@ runs:
       uses: robinraju/release-downloader@v1.10
       with:
         repository: 'NcStudios/VulkanCI'
-        tag: '${{ steps.artifacts.outputs.vk-ci-action-tag }}'
+        tag: 'v1.2'
         filename: '${{ steps.artifacts.outputs.vk-ci-swiftshader-artifact-name}}'
         out-file-path: '${{ inputs.installPath }}/swiftshader'
         extract: true

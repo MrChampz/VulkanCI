@@ -29,13 +29,16 @@ runs:
         ACTION_TAG: ${{ github.action_ref }}
       run: |
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          echo "vk-ci-swiftshader-artifact-name=swiftshader-windows-2022-x64.zip" >> "$GITHUB_OUTPUT"
+          echo "vk-ci-sdk-artifact-name=vulkan-sdk-${{ inputs.sdkVersion }}-windows-${{ runner.arch }}.zip" >> "$GITHUB_OUTPUT"
+          echo "vk-ci-swiftshader-artifact-name=swiftshader-windows-${{ runner.arch }}.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-lib-name=vk_swiftshader.dll" >> "$GITHUB_OUTPUT"
         elif [[ "${{ runner.os }}" == "Linux" ]]; then
-          echo "vk-ci-swiftshader-artifact-name=swiftshader-ubuntu-20.04-x64.zip" >> "$GITHUB_OUTPUT"
+          echo "vk-ci-sdk-artifact-name=vulkan-sdk-${{ inputs.sdkVersion }}-linux-${{ runner.arch }}.zip" >> "$GITHUB_OUTPUT"
+          echo "vk-ci-swiftshader-artifact-name=swiftshader-linux-${{ runner.arch }}.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-lib-name=libvk_swiftshader.so" >> "$GITHUB_OUTPUT"
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
-          echo "vk-ci-swiftshader-artifact-name=swiftshader-macOS-13-x64.zip" >> "$GITHUB_OUTPUT"
+          echo "vk-ci-sdk-artifact-name=vulkan-sdk-${{ inputs.sdkVersion }}-macOS-${{ runner.arch }}.zip" >> "$GITHUB_OUTPUT"
+          echo "vk-ci-swiftshader-artifact-name=swiftshader-macOS-${{ runner.arch }}.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-lib-name=libvk_swiftshader.dylib" >> "$GITHUB_OUTPUT"
         else
           echo "Unsupported OS: ${{ runner.os }}"
@@ -50,18 +53,20 @@ runs:
           echo "vk-ci-action-tag=$ACTION_TAG" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Download Vulkan SDK
-      uses: humbletim/setup-vulkan-sdk@v1.2.1
+    - name: Download VulkanSDK Artifact
+      uses: robinraju/release-downloader@v1.10
       with:
-        vulkan-query-version: '${{ inputs.sdkVersion }}'
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Vulkan-ValidationLayers
-        vulkan-use-cache: true
+        repository: 'MrChampz/VulkanCI'
+        tag: '${{ steps.artifacts.outputs.vk-ci-action-tag }}'
+        filename: '${{ steps.artifacts.outputs.vk-ci-sdk-artifact-name}}'
+        out-file-path: '${{ inputs.installPath }}/VulkanSDK'
+        extract: true
 
     - name: Download Swiftshader Artifact
       uses: robinraju/release-downloader@v1.10
       with:
-        repository: 'NcStudios/VulkanCI'
-        tag: 'v1.2'
+        repository: 'MrChampz/VulkanCI'
+        tag: '${{ steps.artifacts.outputs.vk-ci-action-tag }}'
         filename: '${{ steps.artifacts.outputs.vk-ci-swiftshader-artifact-name}}'
         out-file-path: '${{ inputs.installPath }}/swiftshader'
         extract: true
@@ -72,8 +77,11 @@ runs:
       run: |
         INSTALL_PATH="${{ inputs.installPath }}"
         INSTALL_PATH="${INSTALL_PATH//\\//}"
-        SDK_INSTALL_PATH="$VULKAN_SDK"
+        SDK_INSTALL_PATH="$INSTALL_PATH/VulkanSDK/${{ inputs.sdkVersion }}"
         SWIFTSHADER_INSTALL_PATH="$INSTALL_PATH/swiftshader"
+
+        echo "VULKAN_SDK=$SDK_INSTALL_PATH" >> "$GITHUB_ENV"
+        echo "VULKAN_SDK_VERSION=${{ inputs.sdkVersion }}" >> "$GITHUB_ENV"
 
         cat <<EOF > "$SWIFTSHADER_INSTALL_PATH/vk_swiftshader_icd.json"
         {
@@ -103,7 +111,3 @@ runs:
 
         echo "vk-ci-vulkan-install-path=$SDK_INSTALL_PATH" >> "$GITHUB_OUTPUT"
         echo "vk-ci-swiftshader-install-path=$SWIFTSHADER_INSTALL_PATH" >> "$GITHUB_OUTPUT"
-
-    - name: cat
-      shell: bash
-      run: ls $VULKAN_SDK

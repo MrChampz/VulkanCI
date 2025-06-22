@@ -7,7 +7,7 @@ inputs:
   sdkVersion:
     description: 'Requested VulkanSDK version'
     required: false
-    default: 1.4.309.0
+    default: 1.4.313.0
   installPath:
     description: 'Directory to install to'
     required: false
@@ -29,15 +29,12 @@ runs:
         ACTION_TAG: ${{ github.action_ref }}
       run: |
         if [[ "${{ runner.os }}" == "Windows" ]]; then
-          echo "vk-ci-sdk-artifact-name=vulkanSDK-${{ inputs.sdkVersion }}-windows-2022-x64.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-artifact-name=swiftshader-windows-2022-x64.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-lib-name=vk_swiftshader.dll" >> "$GITHUB_OUTPUT"
         elif [[ "${{ runner.os }}" == "Linux" ]]; then
-          echo "vk-ci-sdk-artifact-name=vulkanSDK-${{ inputs.sdkVersion }}-ubuntu-20.04-x64.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-artifact-name=swiftshader-ubuntu-20.04-x64.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-lib-name=libvk_swiftshader.so" >> "$GITHUB_OUTPUT"
         elif [[ "${{ runner.os }}" == "macOS" ]]; then
-          echo "vk-ci-sdk-artifact-name=vulkanSDK-${{ inputs.sdkVersion }}-macOS-13-x64.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-artifact-name=swiftshader-macOS-13-x64.zip" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-lib-name=libvk_swiftshader.dylib" >> "$GITHUB_OUTPUT"
         else
@@ -53,14 +50,12 @@ runs:
           echo "vk-ci-action-tag=$ACTION_TAG" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Download VulkanSDK Artifact
-      uses: robinraju/release-downloader@v1.10
+    - name: Download Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.2.1
       with:
-        repository: 'NcStudios/VulkanCI'
-        tag: '${{ steps.artifacts.outputs.vk-ci-action-tag }}'
-        filename: '${{ steps.artifacts.outputs.vk-ci-sdk-artifact-name}}'
-        out-file-path: '${{ inputs.installPath }}/VulkanSDK'
-        extract: true
+        vulkan-query-version: '${{ sdkVersion }}'
+        vulkan-components: Vulkan-Headers, Vulkan-Loader, Vulkan-ValidationLayers
+        vulkan-use-cache: true
 
     - name: Download Swiftshader Artifact
       uses: robinraju/release-downloader@v1.10
@@ -77,11 +72,8 @@ runs:
       run: |
         INSTALL_PATH="${{ inputs.installPath }}"
         INSTALL_PATH="${INSTALL_PATH//\\//}"
-        SDK_INSTALL_PATH="$INSTALL_PATH/VulkanSDK/${{ inputs.sdkVersion }}"
+        SDK_INSTALL_PATH="$VULKAN_SDK"
         SWIFTSHADER_INSTALL_PATH="$INSTALL_PATH/swiftshader"
-
-        echo "VULKAN_SDK=$SDK_INSTALL_PATH" >> "$GITHUB_ENV"
-        echo "VULKAN_SDK_VERSION=${{ inputs.sdkVersion }}" >> "$GITHUB_ENV"
 
         cat <<EOF > "$SWIFTSHADER_INSTALL_PATH/vk_swiftshader_icd.json"
         {

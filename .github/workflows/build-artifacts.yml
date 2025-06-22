@@ -7,12 +7,9 @@ jobs:
   build-swiftshader:
     strategy:
       matrix:
-        os: [windows-2022, windows-11-arm, ubuntu-24.04, macOS-13, macOS-15]
+        os: [windows-2022, ubuntu-24.04, macOS-13, macOS-15]
         include:
           - os: windows-2022
-            os_name: windows
-            swiftshaderLibName: vk_swiftshader.dll
-          - os: windows-11-arm
             os_name: windows
             swiftshaderLibName: vk_swiftshader.dll
           - os: ubuntu-24.04
@@ -64,11 +61,9 @@ jobs:
   build-sdk:
     strategy:
       matrix:
-        os: [windows-2022, windows-11-arm, ubuntu-24.04, macOS-13, macOS-15]
+        os: [windows-2022, ubuntu-24.04, macOS-13, macOS-15]
         include:
           - os: windows-2022
-            os_name: windows
-          - os: windows-11-arm
             os_name: windows
           - os: ubuntu-24.04
             os_name: linux

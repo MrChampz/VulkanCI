@@ -11,23 +11,18 @@ jobs:
         include:
           - os: windows-2022
             os_name: windows
-            arch: x64
             swiftshaderLibName: vk_swiftshader.dll
           - os: windows-11-arm
             os_name: windows
-            arch: arm
             swiftshaderLibName: vk_swiftshader.dll
           - os: ubuntu-24.04
             os_name: linux
-            arch: x64
             swiftshaderLibName: libvk_swiftshader.so
           - os: macOS-13
             os_name: macos
-            arch: x64
             swiftshaderLibName: libvk_swiftshader.dylib
           - os: macOS-15
             os_name: macos
-            arch: arm
             swiftshaderLibName: libvk_swiftshader.dylib
 
     name: 'swiftshader-${{ matrix.os }}'
@@ -63,7 +58,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: swiftshader-${{ matrix.os_name }}-${{ matrix.arch }}
+          name: swiftshader-${{ matrix.os_name }}-${{ runner.arch }}
           path: swiftshader_artifacts
 
   build-sdk:
@@ -73,19 +68,14 @@ jobs:
         include:
           - os: windows-2022
             os_name: windows
-            arch: x64
           - os: windows-11-arm
             os_name: windows
-            arch: arm
           - os: ubuntu-24.04
             os_name: linux
-            arch: x64
           - os: macOS-13
             os_name: macos
-            arch: x64
           - os: macOS-15
             os_name: macos
-            arch: arm
         sdkTag: ['vulkan-sdk-1.4.313.0']
 
     name: '${{ matrix.sdkTag }}-${{ matrix.os }}'
@@ -106,7 +96,7 @@ jobs:
         shell: bash
         run: |
           SDK_VERSION=$(echo "${{ matrix.sdkTag }}" | sed -E 's/[^0-9]*([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?).*/\1/')
-          echo "ARTIFACT_NAME=vulkan-sdk-$SDK_VERSION-${{ matrix.os_name }}-${{ matrix.arch }}" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=vulkan-sdk-$SDK_VERSION-${{ matrix.os_name }}-${{ runner.arch }}" >> $GITHUB_ENV
 
           ROOT_PATH='${{ github.workspace }}'
           echo "SDK_PATH=${ROOT_PATH//\\//}/VulkanSDK/$SDK_VERSION" >> $GITHUB_ENV

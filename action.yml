@@ -103,3 +103,6 @@ runs:
 
         echo "vk-ci-vulkan-install-path=$SDK_INSTALL_PATH" >> "$GITHUB_OUTPUT"
         echo "vk-ci-swiftshader-install-path=$SWIFTSHADER_INSTALL_PATH" >> "$GITHUB_OUTPUT"
+
+    - name: cat
+      run: cat $VULKAN_SDK

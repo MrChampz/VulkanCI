@@ -106,4 +106,4 @@ runs:
 
     - name: cat
       shell: bash
-      run: cat $VULKAN_SDK
+      run: ls $VULKAN_SDK

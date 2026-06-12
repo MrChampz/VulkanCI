@@ -71,7 +71,7 @@ jobs:
             os_name: macos
           - os: macOS-15
             os_name: macos
-        sdkTag: ['vulkan-sdk-1.4.313.0']
+        sdkTag: ['vulkan-sdk-1.4.328.0']
 
     name: '${{ matrix.sdkTag }}-${{ matrix.os }}'
     runs-on: ${{ matrix.os }}
